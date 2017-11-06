@@ -2,7 +2,7 @@
 
 ### Background
 
-![logo](http://www.kagay-an.com/wp-content/uploads/2015/10/Airbnb-Logo.jpeg)
+![logo](https://s1.postimg.org/5e53u8w8dr/Airbnb_Presentation.jpg)
 
 Airbnb is a community marketplace where guests can book living accommodations from a list of verified hosts. Membership to the 
 site is completely free and there is no cost to post a listing. Using a targeted user interface designed to narrow down 
@@ -44,6 +44,34 @@ classifiers by each destination
 2. Use Random Forest
 
 3. Use the CARET package in R
+
+### Pictorial Data Description
+
+![Airbnb_Presentation_2.jpg](https://s1.postimg.org/8eagufmq8v/Airbnb_Presentation_2.jpg)
+
+![Airbnb_Presentation_3.jpg](https://s1.postimg.org/32vk9q3nlr/Airbnb_Presentation_3.jpg)
+
+### The Approach
+
+[![Airbnb_Presentation_4.jpg](https://s1.postimg.org/1g18x85z3z/Airbnb_Presentation_4.jpg)](https://postimg.org/image/40739v5xq3/)
+
+[![Airbnb_Presentation_5.jpg](https://s1.postimg.org/7gm6g4i0gf/Airbnb_Presentation_5.jpg)](https://postimg.org/image/127kkj03wr/)
+
+[![Airbnb_Presentation_6.jpg](https://s1.postimg.org/5lz4fuct27/Airbnb_Presentation_6.jpg)](https://postimg.org/image/89okq75ue3/)
+
+[![Airbnb_Presentation_7.jpg](https://s1.postimg.org/3fzpu2tpy7/Airbnb_Presentation_7.jpg)](https://postimg.org/image/5t2cba7j4r/)
+
+[![Airbnb_Presentation_8.jpg](https://s1.postimg.org/1aeckabehb/Airbnb_Presentation_8.jpg)](https://postimg.org/image/2v43jr8lxn/)
+
+[![Airbnb_Presentation_9.jpg](https://s1.postimg.org/3gdr6292a7/Airbnb_Presentation_9.jpg)](https://postimg.org/image/3cu58cfzkb/)
+
+[![Airbnb_Presentation_10.jpg](https://s1.postimg.org/7sckdm0izz/Airbnb_Presentation_10.jpg)](https://postimg.org/image/2v43jrmr6z/)
+
+[![Airbnb_Presentation_11.jpg](https://s1.postimg.org/7hpqkgoqb3/Airbnb_Presentation_11.jpg)](https://postimg.org/image/7zfs91q3vv/)
+
+[![Airbnb_Presentation_12.jpg](https://s1.postimg.org/3d6wmijpj3/Airbnb_Presentation_12.jpg)](https://postimg.org/image/2rx907p98b/)
+
+[![Airbnb_Presentation_13.jpg](https://s1.postimg.org/8dyze2v9sv/Airbnb_Presentation_13.jpg)](https://postimg.org/image/493e1yy3q3/)
 
 
 
