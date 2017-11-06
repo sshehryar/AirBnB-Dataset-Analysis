@@ -42,7 +42,6 @@ str(trainingData)
 str(testData)
 
 
-Playing with training data
 
 
 summary(trainingData$country_destination)
@@ -96,13 +95,7 @@ ggplot(trainingData, aes(x=trainingData$language))+ geom_bar () + scale_fill_dis
 
 str(trainingData$age)
 
-Convert age to integer so that summary stats can be applied
-
 trainingData$age <- as.numeric(as.character(trainingData$age))
-
-
-summary age 
-
 
 summary(trainingData$age)
 
@@ -153,11 +146,7 @@ master_data2$age[master_data2$age < 18] <- NA
 
 master_data2$age[master_data2$age > 127] <- NA
 
-
-find summary for age again
-
 summary(master_data2$age)
-
 
 summary(master_data2$gender)
 dim(master_data2)
@@ -168,10 +157,6 @@ master_data2 <- subset(master_data2, gender != '-unknown-')
 dim(master_data2)
 
 master_data2 <- subset(master_data2, country_destination != 'other')
-
-
-check the dataset
-
 
 dim(master_data2)
 
@@ -201,7 +186,6 @@ master_data4['dac_month'] = dateAccountCreated[,2]
 master_data4['dac_day'] = dateAccountCreated[,3]
 master_data4 = master_data4[,-c(which(colnames(master_data4) %in% c('date_account_created')))]
 
-lets check for invalid values in year, day and month columns
 
 master_data4$dac_day <- as.numeric(as.character(master_data4$dac_day))
 master_data4$dac_month <- as.numeric(as.character(master_data4$dac_month))
@@ -209,11 +193,9 @@ master_data4$dac_year <- as.numeric(as.character(master_data4$dac_year))
 
 summary(master_data4$dac_day)
 
-We see day range is between 1-31 which is correct
 
 summary(master_data4$dac_month)
 
-Month looks fine too!
 
 summary(master_data4$dac_year)
 
