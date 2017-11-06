@@ -1,5 +1,5 @@
 #loading libraries
-```{r}
+
 
 library(stringr)
 library(rpart)
@@ -21,43 +21,30 @@ library(dplyr)
 library(compare)
 library(readr)
 
-```
 
-Loading DataSets
-```{r}
 
 countries_df <- read.csv('DataSets/countries.csv')
 age_gender_bkts_df <- read.csv('DataSets/age_gender_bkts.csv')
 testData <- read.csv('DataSets/test_users.csv')
 trainingData <- read.csv('DataSets/train_users_2.csv')
-```
 
-Exploratory Data Analysis
 
-```{r}
 str(countries_df)
-```
 
-
-```{r}
 str(sessions_df)
-```
-```{r}
+
 str(age_gender_bkts_df)
 dim(age_gender_bkts_df)
 head(age_gender_bkts_df)
-```
 
-```{r}
 str(trainingData)
-```
-```{r}
+
 str(testData)
-```
+
 
 Playing with training data
 
-```{r}
+
 summary(trainingData$country_destination)
 #sort the countries of destination before doing a bar plot
 trainingData <- within(trainingData, 
@@ -71,9 +58,7 @@ ggplot(trainingData, aes(x=trainingData$country_destination))+ geom_bar () + sca
         axis.text.x  = element_text(size=12),
         axis.title.y = element_text(face="bold", vjust=1, size=14),
         axis.text.y  = element_text(size=12)) + labs(x= "Country", y="Number of Users")
-```
 
-```{r}
 #gender distribution
 ggplot(trainingData, aes(x=trainingData$gender))+ geom_bar () + scale_fill_distiller(palette = "RdYlGn") + theme_bw() + ggtitle("Distribution of Gender by First Booking") +
   theme(plot.title = element_text(face="bold", lineheight = .8, hjust = 0.5) ,
@@ -81,9 +66,8 @@ ggplot(trainingData, aes(x=trainingData$gender))+ geom_bar () + scale_fill_disti
         axis.text.x  = element_text(size=12),
         axis.title.y = element_text(face="bold", vjust=1, size=14),
         axis.text.y  = element_text(size=12)) + labs(x= "Gender", y="Number of Users")
-```
-There are alot of unknowns or missing values.
-```{r}
+
+
 
 
 ggplot(age_gender_bkts_df, aes(x=age_gender_bkts_df$age_bucket,  age_gender_bkts_df$population_in_thousands))+ geom_bar (stat = "identity",aes(sort(age_gender_bkts_df$age_bucket,decreasing = T))) + scale_fill_distiller(palette = "RdYlGn") + theme_bw() + ggtitle("Distribution of Age of Users") +
@@ -92,13 +76,10 @@ ggplot(age_gender_bkts_df, aes(x=age_gender_bkts_df$age_bucket,  age_gender_bkts
         axis.text.x  = element_text(size=12,angle = 90),
         axis.title.y = element_text(face="bold", vjust=1, size=14),
         axis.text.y  = element_text(size=12)) + labs(x= "Age bracket", y="Number of Users")
-```
 
-
-```{r}
 summary_language <- summary(trainingData$language)
 count_df <- data.frame(country=names(summary_language), count = summary_language)
-#count_df
+
 
 trainingData <- within(trainingData, 
                    language <- factor(language, 
@@ -113,209 +94,105 @@ ggplot(trainingData, aes(x=trainingData$language))+ geom_bar () + scale_fill_dis
         axis.text.y  = element_text(size=12)) + labs(x= "language", y="Count")
 
 
-```
-
-
-```{r}
 str(trainingData$age)
-```
+
 Convert age to integer so that summary stats can be applied
 
-```{r}
 trainingData$age <- as.numeric(as.character(trainingData$age))
-```
+
 
 summary age 
 
-```{r}
+
 summary(trainingData$age)
-```
 
-**We See that 2014 and 1 are wrong.**
-Furthermore, we need to convert any age below 18 to NA as people below 18 are not allowed to signup.
-
-```{r}
 trainingData$age[trainingData$age < 18] <- NA 
 summary(trainingData$age)
-#Do this again after single master dataset has been formed
-```
 
-** We will need to remove these NAs from age
-
-
-
-```{r}
 summary(trainingData$gender)
-```
+
 
 #There are 95688 -unknown- values that need to be removed
 
-Summary of Countries visited
-```{r}
 summary(trainingData$country_destination)
-```
 
-The 10094 other values are of no use to us and will need to be removed.
 
-Trying some other things, joining train and test data either left outer or full outer join
-
-```{r}
 dim(trainingData)
 
-
-```
-
-```{r}
 dim(testData)
-```
-```{r}
+
 str(testData$age)
 str(trainingData$age)
 master_data<-merge(trainingData, testData, all= T)
 dim(master_data)
-#View(master_data)
-#master_data <- master_data[,-c(17:30)]
-#View(master_data)
 dim(master_data)
-```
 
-```{r}
 dim(sessions_df)
 
-```
-```{r}
-#View(sessions_df)
-```
 
-
-We'd also need to merge countries dataset with master dataset
-
-```{r}
 dim(countries_df)
-```
-```{r}
+
 str(countries_df)
-```
-```{r}
-#View(countries_df)
-```
 
-Try merging master_data with countries.Call it master_data2
-
-```{r}
 master_data2 <- merge(master_data, countries_df, by = "country_destination", all = T)
-```
-```{r}
-#Check new dataset
+
 dim(master_data2)
-```
 
-```{r}
-#View(master_data2)
 
-```
 ###### Cleaning Dataset, Preprocessing and Some Points and observations you should consider 
-#####At this point i'm not including sessions in my master dataset
-1. Split Date Account Created and Date First Booking. Subtract, if you get a negative value, discard that row.
-2. For the rows left, where create a new column. Where date first booked exist -> assign 1, 0 for rest. This could be 1st stage in classifier -> shows whether first booking was made or not.
-3. Remove ages < 18 years as those users aren't allowed to create an account.
-4. Use age_bkts_group to see which age bracket visits which countries the most. This could be another classifier
-5. Remove -unknown- from gender. 
-6. Remove 'other' from countries. Not removing NDF because its likely they have not made their first booking.
-7. If age is missing, but rest all data is available, impute mean
+
 
 #lets start with the cleaning
-```{r}
+
 summary(master_data2$age)
-```
-#Remove <18 and 2014 as its most likely a year
-```{r}
+
+
 master_data2$age[master_data2$age < 18] <- NA
-```
+
 #Remove all age values greater than 127 -> the age of world's oldest living person
-```{r}
+
 master_data2$age[master_data2$age > 127] <- NA
-```
+
 
 find summary for age again
-```{r}
+
 summary(master_data2$age)
-```
 
-#Next let's turn gender '-unknown-' to NAs. We'll do a hard na.omit at the end. Before that we need to impute age if other values are present in the column
 
-```{r}
 summary(master_data2$gender)
 dim(master_data2)
-```
-```{r}
+
 master_data2 <- subset(master_data2, gender != '-unknown-')
-```
 
-check the datset
 
-```{r}
 dim(master_data2)
-```
-# We see that we're down from 275547 to 146067 values.
 
-Now let's remove countries with 'other' as an entry
-
-```{r}
 master_data2 <- subset(master_data2, country_destination != 'other')
-```
+
 
 check the dataset
 
-```{r}
+
 dim(master_data2)
-```
 
-We're down to 111138 values now.
-
-```{r}
 summary(master_data2$age)
-```
 
-We now need to impute ages for the rest of NAs in the age columns. For that we can use MICE package that automatically imputes most plausible values. Similarly Amelia could also be used. For ease, we'll try going ahead with imputing median for missing values since the number of NAs is small as compared to the overall set of data 
-```{r}
 master_data3 <- master_data2
-```
-```{r}
+
 master_data3$age[is.na(master_data3$age)] <- median(master_data3$age, na.rm = TRUE)
-```
 
-```{r}
 summary(master_data3$age)
-```
 
-Our median isn't affected and the mean hasn't changed much so we stay with this. 
 
 #From now on, moving forward, we'll be playing with master_data_3
 
-Let's work with dates now
-```{r}
-#View(master_data3)
-```
-```{r}
+
 master_data4 <- master_data3
 
-```
 
-
-#At this point We've realized that NDF is the actual required feature that tells that no booking has been made yet. As a result we can drop date_first_booking column altogether and because all date_first_booking values were missing in test data. As we've merged test and train, it makes sense to drop the column and use NDF to predict the first booking place.
-
-```{r}
 master_data4 <- subset(master_data4, select = -date_first_booking) #remove date_first_booking
-```
 
-```{r}
-#View(master_data4)
-```
 
-#Now we'll separate date_account_created into year, month and day and then check years...if their invalid, we can remove. Similar suit will be followed for day and month
-
-```{r}
 # split date_account_created in year, month and day
 #this will also remove the previous date_account_created variable
 dateAccountCreated = as.data.frame(str_split_fixed(master_data4$date_account_created, '-', 3))
@@ -324,58 +201,33 @@ master_data4['dac_month'] = dateAccountCreated[,2]
 master_data4['dac_day'] = dateAccountCreated[,3]
 master_data4 = master_data4[,-c(which(colnames(master_data4) %in% c('date_account_created')))]
 
-```
-
-```{r}
-#View(master_data4)
-```
 lets check for invalid values in year, day and month columns
-```{r}
+
 master_data4$dac_day <- as.numeric(as.character(master_data4$dac_day))
 master_data4$dac_month <- as.numeric(as.character(master_data4$dac_month))
 master_data4$dac_year <- as.numeric(as.character(master_data4$dac_year))
-```
-```{r}
+
 summary(master_data4$dac_day)
-```
+
 We see day range is between 1-31 which is correct
 
-```{r}
 summary(master_data4$dac_month)
-```
 
 Month looks fine too!
 
-```{r}
 summary(master_data4$dac_year)
-```
-
-Year range is good. So we're good to go! 
-
-We need to divide the timestamp too in a similar fashion. Time first active plays an important role in determining whether a user will book or not because a user has higher chance of booking a place when first accessed.
 
 
-```{r}
+
+
 str(master_data4$timestamp_first_active)
-```
 
-We need to convert timestamp_first_active to string and then parse
-
-```{r}
 master_data4$timestamp_first_active <- as.character(as.numeric(master_data4$timestamp_first_active))
-```
 
-```{r}
 str(master_data4$timestamp_first_active)
-```
-```{r}
+
 head(master_data4$timestamp_first_active)
-```
 
-
-Now we can parse
-
-```{r}
 # split timestamp_first_active in year, month and day
 master_data4[,'tfa_year'] = substring(master_data4$timestamp_first_active, 1, 4)
 master_data4['tfa_month'] = substring(master_data4$timestamp_first_active, 5, 6)
@@ -386,56 +238,31 @@ master_data4['tfa_day'] = substring(master_data4$timestamp_first_active, 7, 8)
 #remove previous timestamp_first_active variable
 master_data4 = master_data4[,-c(which(colnames(master_data4) %in% c('timestamp_first_active')))]
 
-
-```
-
-```{r}
 #View(master_data4)
 str(master_data4$tfa_day)
 
-```
-
-Converting tfa_year, day, month to num(int)
-
-```{r}
 master_data4$tfa_day <- as.numeric(as.character(master_data4$tfa_day))
 master_data4$tfa_month <- as.numeric(as.character(master_data4$tfa_month))
 master_data4$tfa_year <- as.numeric(as.character(master_data4$tfa_year))
-```
-```{r}
-#View(master_data4)
-```
 
-Check time first access day, month and year to ensure they're plausible.
 
-```{r}
 summary(master_data4$tfa_day)
-```
 
-```{r}
 summary(master_data4$tfa_month)
-```
 
-```{r}
 summary(master_data4$tfa_year)
-```
-Theres a problem. Account first created starts from 2010 where as timestamp first active gives 2009. Therefore we need to remove values less than 2010
 
-```{r}
 master_data4 <- subset(master_data4, tfa_year != 2009)
-```
 
-```{r}
+
+
 dim(master_data4)
-```
 
-```{r}
+
+
 summary(master_data4$tfa_year)
-```
 
-Now our data is pretty much cleaned
 
-```{r}
 one_hot_encoding_features = c('gender', 'signup_method', 'signup_flow', 'language', 'affiliate_channel', 'affiliate_provider', 'first_affiliate_tracked', 'signup_app', 'first_device_type', 'first_browser')
 
 dummies <- dummyVars(~ gender + signup_method + signup_flow + language + affiliate_channel + affiliate_provider + first_affiliate_tracked + signup_app + first_device_type + first_browser, data = master_data4)
@@ -443,74 +270,30 @@ dummies <- dummyVars(~ gender + signup_method + signup_flow + language + affilia
 master_data_4_ohe <- as.data.frame(predict(dummies, newdata = master_data4))
 
 master_data_4_combined <- cbind(master_data4[,-c(which(colnames(master_data4) %in% one_hot_encoding_features))],master_data_4_ohe)
-```
-```{r}
-#View(master_data_4_combined)
-```
 
-#master_data_4_combined is our new dataframe to play with further. We'll first remove the gender unknown column.
-
-```{r}
 master_data_4_combined <- subset(master_data_4_combined, select = -`gender.-unknown-` )
-```
 
-remove language unknown
-```{r}
 master_data_4_combined <- subset(master_data_4_combined, select = -`language.-unknown-` )
-```
 
-remove device unknown
-```{r}
 master_data_4_combined <- subset(master_data_4_combined, select = -`first_device_type.Other/Unknown` )
-```
 
-remove first browser unknown
-
-```{r}
 master_data_4_combined <- subset(master_data_4_combined, select = -`first_browser.-unknown-` )
-```
 
 
-```{r}
-dim(master_data_4_combined)
-```
-
-#At this point , from the dataset, it can be seen that the missing values are those for which the destination is NDF. We'll simply impute -1 for them. 
-
-#Also we can remove destination_language as country and language we already have.
-
-```{r}
 master_data_4_combined <- subset(master_data_4_combined, select = - destination_language)
-```
 
-```{r}
 master_data_4_combined[is.na(master_data_4_combined)] <- -1
-```
+
 
 ############################################################################
 
-At this point, we can model without taking sessions.csv into account. It can be used later on for further refining of the model where we can use the primary, secondary device and time spent as factors taken into account for first destination booking.
-
-
-```{r}
 str(master_data_4_combined$country_destination)
 summary(master_data_4_combined$country_destination)
 
-```
-
-
-```{r}
 summary(master_data_4_combined$country_destination)
 
-```
-```{r}
 master_5 <- master_data_4_combined
-#View(master_5)
-```
 
-We directly jump to use the boosted algorithm for random forest , xgboost
-
-```{r}
 set.seed(123567)
 split_xgb<-(0.8)
 trainingRowIndex_xgb <- sample(1:nrow(master_data_4_combined),(split_xgb)*nrow(master_data_4_combined))
@@ -540,38 +323,20 @@ xgb <- xgboost(data = data.matrix(X[,-1]),
 )
 
 
-```
-
-```{r}
 #important features
 
 model <- xgb.dump(xgb, with_stats = T)
 model[1:10]
-```
-```{r}
+
 names <- dimnames(data.matrix(X[,-1]))[[2]]
-#names
-```
-```{r}
+
 # Compute feature importance matrix
 importance_matrix <- xgb.importance(names, model = xgb)
 # graph
 xgb.plot.importance(importance_matrix[1:20,])
-```
 
-```{r}
 xgb.dump(xgb)
-```
 
-
-
-
-
-#Prediction
-
-
-```{r}
-# predict values in test set
 
 
 y_pred <- predict(xgb, data.matrix(X_test[,-1]))
@@ -585,33 +350,12 @@ predictions_top8 <- as.vector(apply(predictions, 2, function(x) names(sort(x)[12
 
 head(predictions_top8)
 
-
-
-
-```
-
-```{r}
 pred_variable <- as.data.frame(predictions_top8)
-```
 
-```{r}
 dim(pred_variable)
-```
-```{r}
+
 dim(X_test)
-```
 
-```{r}
 dim(X)
-```
-```{r}
+
 dim(master_data_4_combined)
-```
-
-
-
-
-
-
-
-
