@@ -1,26 +1,6 @@
----
-title: ' SAS786 - Project2 - AirBnb - R Notebook'
-output:
-  html_notebook: default
-  pdf_document: default
----
-
-This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
-
-Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
-
-```{r}
-print ("Hello World!")
-```
-###############################################################################################
-Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
-###############################################################################################
-When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file).
-
-Business Analytics Project 2 -> Prediction of AirBnB - New User's First Booking Destination
 #loading libraries
 ```{r}
-#install.packages("xgboost")
+
 library(stringr)
 library(rpart)
 library(rpart.plot)
@@ -45,7 +25,7 @@ library(readr)
 
 Loading DataSets
 ```{r}
-sessions_df <- read.csv('DataSets/sessions.csv')
+
 countries_df <- read.csv('DataSets/countries.csv')
 age_gender_bkts_df <- read.csv('DataSets/age_gender_bkts.csv')
 testData <- read.csv('DataSets/test_users.csv')
@@ -115,19 +95,6 @@ ggplot(age_gender_bkts_df, aes(x=age_gender_bkts_df$age_bucket,  age_gender_bkts
 ```
 
 
-
-
-
-
-Gives the total distribution of age brackets.
-
-
-
-
-
-##############################################################################################
-
-Let's check the language
 ```{r}
 summary_language <- summary(trainingData$language)
 count_df <- data.frame(country=names(summary_language), count = summary_language)
@@ -148,11 +115,6 @@ ggplot(trainingData, aes(x=trainingData$language))+ geom_bar () + scale_fill_dis
 
 ```
 
-Most are english speakers
-
-###########################################################################################
-
-Summary Statistics 
 
 ```{r}
 str(trainingData$age)
@@ -180,7 +142,7 @@ summary(trainingData$age)
 
 ** We will need to remove these NAs from age
 
-On to gender
+
 
 ```{r}
 summary(trainingData$gender)
@@ -216,13 +178,6 @@ dim(master_data)
 #View(master_data)
 dim(master_data)
 ```
-
-
-
-
-
-
-
 
 ```{r}
 dim(sessions_df)
@@ -456,11 +411,11 @@ Check time first access day, month and year to ensure they're plausible.
 ```{r}
 summary(master_data4$tfa_day)
 ```
-Looks good
+
 ```{r}
 summary(master_data4$tfa_month)
 ```
-looks good
+
 ```{r}
 summary(master_data4$tfa_year)
 ```
@@ -473,7 +428,6 @@ master_data4 <- subset(master_data4, tfa_year != 2009)
 ```{r}
 dim(master_data4)
 ```
-We see that two obsvns had incorrect year entry
 
 ```{r}
 summary(master_data4$tfa_year)
@@ -481,16 +435,6 @@ summary(master_data4$tfa_year)
 
 Now our data is pretty much cleaned
 
-
-###########################################################################
-##Next step is Data transformation so that efficient classification can be performed. 
-
-We have the following options:
-1. We can bucket age as was given in age_bucket_grp or whatever it was called! 2. Binary Normalization or -1/+1 normalization
-3.Log transformation 
-4. Use one-hot encoding. This is the better one as it takes a column and converts it into n number of columns based on the categories present in initial column. Added advantage of using one-hot-encoding is that we don't need to manually create dummy variables.
-
-#Going with One Hot Encoding
 ```{r}
 one_hot_encoding_features = c('gender', 'signup_method', 'signup_flow', 'language', 'affiliate_channel', 'affiliate_provider', 'first_affiliate_tracked', 'signup_app', 'first_device_type', 'first_browser')
 
@@ -547,56 +491,11 @@ master_data_4_combined[is.na(master_data_4_combined)] <- -1
 
 At this point, we can model without taking sessions.csv into account. It can be used later on for further refining of the model where we can use the primary, secondary device and time spent as factors taken into account for first destination booking.
 
-#############################################################################
-Modeling 
-############################################################################
-First Model Simple Decision Tree - Very Slow and Not recommended
-
-```{r}
-# #split
-# set.seed(123456)
-# split_dt<-(2/3)
-# trainingRowIndex_dt <- sample(1:nrow(master_data_4_combined),(split_dt)*nrow(master_data_4_combined))  # row indices for training data
-# trainingData_dt <- master_data_4_combined[trainingRowIndex_dt, ]  # model training data
-# testData_dt  <- master_data_4_combined[-trainingRowIndex_dt, ]   # test data
-# 
-# #model
-# modelTree<-rpart(country_destination ~ .  , 
-#                   data = trainingData_dt, method = "class")
-# modelTree
-# printcp(modelTree)
-# #rpart.plot(bankTree)
-# 
-# # Prediction
-# prediction <- predict(modelTree, testData_dt, type = "class")
-# 
-# conf.table <- data.frame(actual= testData$country_destination, Prediction = prediction)
-# table(conf.table)
-# 
-# #other ways to review accuracy
-# printcp(modelTree)  # print the cptable
-# mean(testData_dt$country_destination != prediction)    # % misclassification error 
-# summary(modelTree)
-# 
-# # To plot the ROC we need the library(pROC)
-# library(pROC)
-# prediction.prob <- predict(modelTree, testData_dt, type = "prob")
-# plot(roc(testData_dt$country_destination,prediction.prob[,2]))
-# auc(testData_dt$country_destination,prediction.prob[,2])
-
-
-
-```
 
 ```{r}
 str(master_data_4_combined$country_destination)
 summary(master_data_4_combined$country_destination)
 
-```
-Remove 'other'
-
-```{r}
-master_data_4_combined <- subset(master_data_4_combined, country_destination != 'other')
 ```
 
 
@@ -609,7 +508,7 @@ master_5 <- master_data_4_combined
 #View(master_5)
 ```
 
-We directly jump to use the boosted algorithm for randome forest , xgboost
+We directly jump to use the boosted algorithm for random forest , xgboost
 
 ```{r}
 set.seed(123567)
@@ -710,117 +609,6 @@ dim(master_data_4_combined)
 ```
 
 
-```{r}
-#Cross Validate 
-library(xgboost)
-xgb_crossValidate <- xgb.cv(data = data.matrix(X[,-1]), 
-               label = y, 
-               eta = 0.1,
-               max_depth = 15,  
-               nround=120, 
-               early_stopping_rounds = 100,
-               subsample = 0.5,
-               colsample_bytree = 0.5,
-               seed = 1,
-               eval_metric = "merror",
-               objective = "multi:softprob",
-               num_class = 12,
-               nthread = 3,
-               prediction = TRUE,
-               nfold = 10
-)
-
-```
-
-
-user_id is coming out as an important feature in xgb whereas by our understanding it shouldn't have an affect on choosing the first destination. Hence, we feed the other variables in a logistic regression model to see if our results can be improved.
-
-
-```{r}
-library(randomForest)
-model <- randomForest(country_destination ~ age+dac_day+dac_month+dac_year+signup_flow+tfa_day+signup_method.basic+signup_method.facebook+signup_method.google+gender.FEMALE+gender.MALE+lat_destination, data = trainingData_xgb, ntree =5000,mtry = 15, importance=T)
-#fit <- glm(country_destination ~ age+dac_day+dac_month+dac_year+signup_flow+tfa_day+signup_method.basic+signup_method.facebook+signup_method.google+gender.FEMALE+gender.MALE+lat_destination, family = multinomial, data = trainingData_xgb)
-```
-
-
-
-
-
-
-
-
-##################################################################################################
-```{r}
-dim(master_5)
-```
-
-
-
-Combining master_5 with sessions. But first we'll need to preprocess and aggregate sessions according to time logged in from a specific device. Hence we'll be aggregating sessions by device_type
-
-```{r}
-#aggregating sessions
-#str(sessions_df$secs_elapsed)
-#head(sessions_df$secs_elapsed)
-#sum(head(sessions_df$secs_elapsed))
-str(master_5)
-str(sessions_df)
-sessions1 <- subset(sessions_df, select =  -c(action, action_type,action_detail) )
-
-sessions2<- aggregate(x = sessions1, FUN = sum, by = list(sessions1$secs_elapsed))
-#str(sessions2)
-
-sessions2=aggregate(sessions1$secs_elapsed~sessions1$user_id+sessions1$device_type,sessions1,FUN=sum)
-
-str(sessions2)
-#sessions2$`sessions1$user_id` <-  sessions2$`sessions1$user_id`[sessions2$`sessions1$user_id`!=""]
-
-sessions3 <- subset(sessions2, sessions2$`sessions1$user_id`!="")
-sessions3 <- subset(sessions3,sessions3$`sessions1$device_type` != "-unknown-")
-
-#View(sessions3)
-
-summary(sessions3)
-
-master6 <- merge(master_data_4_combined,sessions3 , by.x = "id", by.y = "sessions1$user_id", all.x = TRUE)
-
-
-
-master_data_4_combined[is.na(master_data_4_combined)] <- -1
-
-master6$`sessions1$secs_elapsed`[is.na(master6$`sessions1$secs_elapsed`)] <- 0 
-
-summary(master6$`sessions1$secs_elapsed`)
-
-
-```
-
-
-
-Using One Hot encoding to extract device information 
-
-```{r}
-
-colnames(data)[colnames(data)=="old_name"] <- "new_name"
-
-colnames(master6)[colnames(master6) == "sessions1$device_type"] <- "device_type"
-colnames(master6)[colnames(master6) == "sessions1$secs_elapsed"] <- "seconds_elapsed"
-
-
-one_hot_encoding_features2 = 'device_type'
-
-dummies2 <- dummyVars(~ device_type, data = master6)
-
-master_data_6_ohe <- as.data.frame(predict(dummies2, newdata = master6))
-
-master7 <- cbind(master6[,-c(which(colnames(master6) %in% one_hot_encoding_features2))],master_data_6_ohe)
-
-
-
-#master7 <- subset(master7, select = -device_type)
-
-
-```
 
 
 
