@@ -23,10 +23,10 @@ library(readr)
 
 
 
-countries_df <- read.csv('DataSets/countries.csv')
-age_gender_bkts_df <- read.csv('DataSets/age_gender_bkts.csv')
-testData <- read.csv('DataSets/test_users.csv')
-trainingData <- read.csv('DataSets/train_users_2.csv')
+countries_df <- read.csv('Datasets/countries.csv')
+age_gender_bkts_df <- read.csv('Datasets/age_gender_bkts.csv')
+testData <- read.csv('Datasets/test_users.csv')
+trainingData <- read.csv('Datasets/train_users_2.csv')
 
 
 str(countries_df)
