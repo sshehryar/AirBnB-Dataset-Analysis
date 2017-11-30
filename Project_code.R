@@ -31,7 +31,6 @@ trainingData <- read.csv('DataSets/train_users_2.csv')
 
 str(countries_df)
 
-str(sessions_df)
 
 str(age_gender_bkts_df)
 dim(age_gender_bkts_df)
@@ -120,7 +119,6 @@ master_data<-merge(trainingData, testData, all= T)
 dim(master_data)
 dim(master_data)
 
-dim(sessions_df)
 
 
 dim(countries_df)
